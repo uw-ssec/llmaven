@@ -1,0 +1,34 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+{
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": ".."
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+          "ms-toolsai.jupyter",
+          "ms-python.python",
+          "ms-azuretools.vscode-docker"
+      ]
+    },
+    "codespaces": {
+      "openFiles": ["README.md"]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+  "containerEnv": {
+    "OLMO_MODEL_FILE": "OLMo-7B-Instruct-Q4_K_M.gguf"
+  },
+  "onCreateCommand": {
+    "pixi-install": "pixi install"
+  },
+  "postCreateCommand": {
+    "create-shell-hook": "pixi shell-hook --shell bash > /etc/profile.d/pixi.sh"
+  }
+}
