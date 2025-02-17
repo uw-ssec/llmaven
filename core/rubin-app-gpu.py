@@ -106,17 +106,16 @@ pn.extension()
 model, tokenizer = load_transformer_model()
 
 base_path = Path(__file__).parent.parent.resolve()
-qdrant_path = base_path / "data" / "vector_stores" / "rubin_qdrant"
-# qdrant_path = Path("/workspaces/Rubin-RAG-exp/resources/rubin_qdrant")
-qdrant_collection = "rubin_telescope"
+qdrant_path = base_path / "data" / "vector_stores" / "rubin_qdrant_exp" #TODO Change for needed vector store
+qdrant_collection = "rubin_telescope_exp" #TODO Change for needed vector store
 
-embedding = SentenceTransformer("sentence-transformers/all-MiniLM-L12-v2")
+embedding = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
 
 client = QdrantClient(path=str(qdrant_path))
 db = Qdrant(
     client=client,
     collection_name=qdrant_collection,
-    embeddings=embedding.encode
+    embeddings=embedding # Use embedding.encode if embedding is directly from SentenceTransformer
 )
 
 input_prompt_template = textwrap.dedent(
