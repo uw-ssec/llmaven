@@ -7,9 +7,10 @@ from qdrant_client import QdrantClient
 
 # Configurations
 PDF_FOLDER_PATH = Path("/workspaces/Rubin-RAG-exp/data/raw/Rubin")
-QDRANT_PATH = Path("/workspaces/Rubin-RAG-exp/data/vector_stores/rubin_qdrant")
-QDRANT_COLLECTION = "rubin_telescope"
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"  # Change this to try new models
+QDRANT_PATH = Path("/workspaces/Rubin-RAG-exp/data/vector_stores/rubin_qdrant_exp")
+QDRANT_COLLECTION = "rubin_telescope_exp"
+# EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"  # Change this to try new models
+EMBEDDING_MODEL_NAME = "intfloat/multilingual-e5-large-instruct"
 
 def load_documents(pdf_folder: Path):
     """Loads PDFs from a given folder and extracts text."""
