@@ -38,5 +38,6 @@
   ],
   "securityOpt": [
     "seccomp=unconfined"                 // Relax security for Docker operations
-  ]
+  ],
+  "forwardPorts": [8501]
 }
