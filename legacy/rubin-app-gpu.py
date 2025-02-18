@@ -106,10 +106,10 @@ pn.extension()
 model, tokenizer = load_transformer_model()
 
 base_path = Path(__file__).parent.parent.resolve()
-qdrant_path = base_path / "data" / "vector_stores" / "rubin_qdrant_exp" #TODO Change for needed vector store
-qdrant_collection = "rubin_telescope_exp" #TODO Change for needed vector store
+qdrant_path = base_path / "data" / "vector_stores" / "rubin_qdrant" #TODO Change for needed vector store
+qdrant_collection = "rubin_telescope" #TODO Change for needed vector store
 
-embedding = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
+embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L12-v2")
 
 client = QdrantClient(path=str(qdrant_path))
 db = Qdrant(
