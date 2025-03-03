@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from app.routers import query
+from app.routers import retrieve
+from app.routers import generate
 
 app = FastAPI(title="RAG Application")
 
-# Include the query endpoints under an /api prefix
-app.include_router(query.router, prefix="/api")
+app.include_router(retrieve.router, prefix="/api")
+app.include_router(generate.router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
