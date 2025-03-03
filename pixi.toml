@@ -24,6 +24,8 @@ ipykernel = ">=6.29.5,<6.30"
 docker-py = ">=7.1.0,<7.2"
 testcontainers = ">=4.8.0,<4.9"
 tenacity = "==8.5.0"
+pytest = ">=8.3.5,<9"
+fastapi = ">=0.115.11,<0.116"
 
 [pypi-dependencies]
 langchain = "==0.2.3"
@@ -43,3 +45,15 @@ bitsandbytes = ">=0.42.0, <0.46"
 
 [target.linux-64.pypi-dependencies]
 llama-cpp-python = {url = "https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.4-cu124/llama_cpp_python-0.3.4-cp311-cp311-linux_x86_64.whl"}
+
+[feature.frontend.dependencies]
+streamlit = "*"
+tenacity = "==8.5.0"
+
+[feature.frontend.pypi-dependencies]
+langchain = "==0.2.3"
+langchain-community = "==0.2.4"
+pymupdf = ">=1.24.10, <1.25"
+
+[environments]
+frontend = { features = ["frontend"], no-default-feature = true }
