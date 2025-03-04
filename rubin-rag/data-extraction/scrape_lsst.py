@@ -117,7 +117,8 @@ def scrape_forum(delay=2):
                     # keep appending to the dictionary
                     qa_pairs.append({
                         "category_id": topic_data["category_id"],
-                        "question": topic_data["question"],
+                        "context": topic_data["question"], 
+                        "question": posts[0]["cooked"],
                         "question_author": topic_data["question_author"],
                         "question_date": topic_data["question_date"],
                         "answer": reply_data["answer"],
@@ -152,7 +153,9 @@ def main():
     qa_df.reset_index(drop=True, inplace=True)
 
     # save the data to a CSV file
-    csv_filename = "scraped_data/lsst_forum_responses.csv"
+    csv_filename = "lsst_forum_responses.csv"
     qa_df.to_csv(csv_filename, index=False)
     print("Scraping complete! Data successfully saved.")
 
+if __name__ == "__main__":
+    main()
