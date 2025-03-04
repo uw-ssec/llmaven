@@ -2,6 +2,7 @@ from pathlib import Path
 from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
 from core.embeddings.embedding_model import get_embedding_model
+import shutil
 
 class Retriever:
     def __init__(self, model_name: str = None, qdrant_path: str = None, collection_name: str = None):
@@ -38,7 +39,9 @@ class Retriever:
             try:
                 client = QdrantClient(path="data/vector_stores") 
                 client.delete_collection(collection_name)
+                shutil.rmtree(Path("data/vector_stores") / collection_name, ignore_errors=True)
                 print(f"Deleted existing collection '{collection_name}'.")
+
             except Exception as e:
                 print(f"Warning: Could not delete collection '{collection_name}'. Error: {str(e)}")
 

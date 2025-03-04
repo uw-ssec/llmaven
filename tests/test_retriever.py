@@ -29,6 +29,8 @@ def test_retrieve_endpoint(query, expected_status):
     payload = {
         "documents": sample_documents,
         "query": query,
+        "existing_collection": None,
+        "existing_qdrant_path": None,
         "embedding_model": "sentence-transformers/all-MiniLM-L12-v2"
     }
 
