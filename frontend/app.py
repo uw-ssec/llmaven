@@ -36,6 +36,8 @@ def process_uploaded_files(uploaded_files):
     """Reads uploaded PDF files and extracts text + metadata."""
     documents = []
     for file in uploaded_files:
+        with open(file.name, "wb") as f:
+            f.write(file.getbuffer())
         loader = PyMuPDFLoader(file.name)  # Load PDF
         pages = loader.load()
 
