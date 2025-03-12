@@ -1,0 +1,59 @@
+[project]
+name = "rubin-rag"
+version = "0.1.0"
+description = "Rubin Telescope Chatbot"
+authors = ["Landung 'Don' Setiawan <landungs@uw.edu>"]
+channels = ["conda-forge", "pytorch"]
+platforms = ["linux-64"]
+
+[tasks]
+start-jlab = {cmd = "jupyter lab", description = "Start Jupyter Lab"}
+serve-panel ={cmd = "python rubin-chat/rubin-panel-app.py", description = "Serve the panel app"}
+
+[dependencies]
+python = "3.11.*"
+pixi-kernel = ">=0.4.0,<0.5"
+jupyterlab = ">=4.2.5,<4.3"
+jupyter_bokeh = ">=4.0.5,<4.1"
+libopenblas = ">=0.3.27,<0.4"
+tqdm = ">=4.66.5,<4.67"
+numpy = "<2"
+pandas = ">=2.2.2,<2.3"
+panel = ">=1.5.0,<1.6"
+ipykernel = ">=6.29.5,<6.30"
+docker-py = ">=7.1.0,<7.2"
+testcontainers = ">=4.8.0,<4.9"
+tenacity = "==8.5.0"
+pytest = ">=8.3.5,<9"
+fastapi = ">=0.115.11,<0.116"
+
+[pypi-dependencies]
+langchain = "==0.2.3"
+langchain-community = "==0.2.4"
+langchain-qdrant = "==0.1.0"
+langchain-huggingface = "==0.0.3"
+jupyter-panel-proxy = "==0.2.0a2"
+qdrant-client = ">=1.11.2, <1.12"
+sentence-transformers = ">=3.1.0, <3.2"
+nltk = ">=3.9.1, <3.10"
+arxiv = ">=2.1.3, <2.2"
+pymupdf = ">=1.24.10, <1.25"
+ssec-tutorials = { git = "https://github.com/uw-ssec/ssec_tutorials.git", rev = "28e7755fb38aa330690944d79c1f1720dd1ad87e" }
+transformers = { git = "https://github.com/huggingface/transformers.git", rev = "298b3f1" }
+accelerate = ">=0.26.0"
+bitsandbytes = ">=0.42.0, <0.46"
+
+[target.linux-64.pypi-dependencies]
+llama-cpp-python = {url = "https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.4-cu124/llama_cpp_python-0.3.4-cp311-cp311-linux_x86_64.whl"}
+
+[feature.frontend.dependencies]
+streamlit = "*"
+tenacity = "==8.5.0"
+
+[feature.frontend.pypi-dependencies]
+langchain = "==0.2.3"
+langchain-community = "==0.2.4"
+pymupdf = ">=1.24.10, <1.25"
+
+[environments]
+frontend = { features = ["frontend"], no-default-feature = true }
