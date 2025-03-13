@@ -31,9 +31,9 @@ The scraped data is stored in `scraped_data/lsst_forum_responses.csv` with the f
 - `category_id`: Unique ID of the topic's category (For example, category_id of "News" is 7).
 - `question_header`: Title of the question.
 - `question_author_id`: User ID of the question's author.
-- `question`: Full text of the question.
+- `question`: Full text of the question (HTML tags removed).
 - `question_date`: Date when the question was posted/last modified.
-- `answer`: Full text of the answer.
+- `answer`: Full text of the answer (HTML tags removed).
 - `answer_author_username`: Username of the respondent.
 - `answer_date`: Date when the response was posted/last modified.
 - `community_role`: Role of the respondent in the forum.

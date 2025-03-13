@@ -3,9 +3,10 @@ import pandas as pd
 import time
 import os
 from tqdm import tqdm
+from bs4 import BeautifulSoup
 
 BASE_URL = "https://community.lsst.org"
-LATEST_URL = f"{BASE_URL}/latest.json"  # to get the latest topics and posts first, use '/latest.json' endpoint.
+LATEST_URL = f"{BASE_URL}/latest.json"
 CSV_FILENAME = "eval/data_extraction/scraped_data/lsst_forum_responses.csv"
 
 def get_last_scrape_date():
@@ -61,6 +62,12 @@ def extract_reply_data(post, topic_id):
         "is_accepted_answer": post.get("accepted_answer", False)
     }
 
+def strip_html(text):
+    if pd.isna(text):
+        return ""
+    soup = BeautifulSoup(text, "html.parser")
+    return soup.get_text(separator=" ").strip()
+
 def scrape_forum(delay=2, last_scrape_date=None):
     qa_pairs = []
     page = 0
@@ -93,9 +100,9 @@ def scrape_forum(delay=2, last_scrape_date=None):
                         "category_id": topic_data["category_id"],
                         "question_header": topic_data["question"],
                         "question_author_id": topic_data["question_author"],
-                        "question": posts[0]["cooked"],
+                        "question": strip_html(posts[0]["cooked"]),
                         "question_date": topic_data["question_date"],
-                        "answer": reply_data["answer"],
+                        "answer": strip_html(reply_data["answer"]),
                         "answer_author_username": reply_data["answer_author"],
                         "answer_date": reply_data["answer_date"],
                         "community_role": reply_data["primary_group_name"],
@@ -105,7 +112,6 @@ def scrape_forum(delay=2, last_scrape_date=None):
                         "is_staff": reply_data["staff"],
                         "is_accepted_answer": reply_data["is_accepted_answer"]
                     })
-
             time.sleep(delay)
         
         page += 1
