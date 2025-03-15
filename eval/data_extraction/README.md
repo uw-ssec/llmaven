@@ -34,7 +34,6 @@ The scraped data is stored in `scraped_data/lsst_forum_responses.csv` with the f
 - `question`: Full text of the question (HTML tags removed).
 - `question_date`: Date when the question was posted/last modified.
 - `answer`: Full text of the answer (HTML tags removed).
-- `answer_author_username`: Username of the respondent.
 - `answer_date`: Date when the response was posted/last modified.
 - `community_role`: Role of the respondent in the forum.
 - `community_visual_badge`: Visual flair/badge associated with the respondent (will be visible near their username in the forum).
