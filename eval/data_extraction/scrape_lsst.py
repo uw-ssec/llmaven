@@ -52,7 +52,6 @@ def extract_reply_data(post, topic_id):
     return {
         "topic_id": topic_id,
         "answer": post.get("cooked"),
-        "answer_author": post.get("username"),
         "answer_date": post.get("created_at"),
         "primary_group_name": post.get("primary_group_name"),
         "flair_name": post.get("flair_name"),
@@ -103,7 +102,6 @@ def scrape_forum(delay=2, last_scrape_date=None):
                         "question": strip_html(posts[0]["cooked"]),
                         "question_date": topic_data["question_date"],
                         "answer": strip_html(reply_data["answer"]),
-                        "answer_author_username": reply_data["answer_author"],
                         "answer_date": reply_data["answer_date"],
                         "community_role": reply_data["primary_group_name"],
                         "community_visual_badge": reply_data["flair_name"],
