@@ -58,3 +58,59 @@ Notes:
   the script prints how many.
 
 On the Jan–Mar 2026 dump: 11,992 requests → 279 sessions in ~10s.
+
+## How it works, function by function
+
+### `reader.py` (Carlos's — mostly unchanged)
+
+- **`load_messages(path)`** — reads one raw `.jsonl` file and unpacks it into
+  a table (one row per piece of a message: one row of text, one tool call,
+  etc.), tagged with which session/request/model it came from.
+- **`last_request_per_session(df)`** — since every request re-sends the
+  *whole* conversation so far, the request with the most messages in it is
+  the one with the fullest picture. This picks that one request per session.
+- **`deduplicate_messages(df)`** — because the history keeps getting resent,
+  the same message shows up over and over across requests. This keeps only
+  the first copy of each one. (Used by the analysis notebook, not by
+  `group_sessions.py` — see the note below.)
+- **`normalize_model_name(model)`** — model names show up in messy,
+  inconsistent formats (`bedrock/us.anthropic.claude-3-5-sonnet-...`). This
+  cleans them into one consistent short form.
+- **`flatten_value`, `get_value`, `inspect_keys`** — small helpers for poking
+  around in the raw JSON while exploring the data in a notebook.
+- **`_parse_end_user`, `_base_row`, `_rows_from_block`** — internal plumbing
+  `load_messages` uses to pull the session/device/account IDs out of each
+  record and turn one message into table rows. Not meant to be called
+  directly.
+
+### `group_sessions.py` (new)
+
+- **`main()`** — the entry point. Reads the command-line arguments, loads
+  the data, builds the sessions, writes the output file, and prints a
+  summary (how many requests loaded, how many sessions written, how many
+  skipped).
+- **`_resolve_input_paths(input)`** — figures out what to actually read:
+  if you point it at a single file, a folder, or a `.zip`, it works out the
+  list of `.jsonl` files inside.
+- **`_load_all(paths)`** — loads every one of those files and stacks them
+  into one big table.
+- **`build_sessions(df)`** — the main logic. Groups all the rows by
+  `session_id`, adds up each session's total spend/tokens/request count,
+  and calls `_reconstruct_conversation` to build the actual message list.
+  Also counts and skips any requests with no `session_id` at all.
+- **`_reconstruct_conversation(rows)`** — takes one session's rows (already
+  narrowed down to its fullest request) and puts the messages back in the
+  right order: all the input messages first, then the final reply.
+- **`_blocks_to_message(rows)`** — a message can be made of several pieces
+  (some text, then a tool call). This glues those pieces back into one
+  `{role, content}` message.
+- **`_block_to_content(row)`** — converts one row back into the
+  original-shaped piece it came from (a text block, a tool call, etc.).
+
+**Why `deduplicate_messages` is skipped here:** it keeps only the *first*
+copy of each message, attributing it to whichever request sent it earliest.
+But we want the full conversation from the request that has the *most*
+messages — and by the time dedup runs, most of that request's own messages
+have already been "claimed" by earlier requests and removed. So
+`group_sessions.py` reconstructs each session straight from its raw,
+un-deduped data instead.
