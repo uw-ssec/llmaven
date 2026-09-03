@@ -79,7 +79,12 @@ def _block_to_content(row: pd.Series) -> dict:
             tool_input = json.loads(row["tool_input"]) if row["tool_input"] else None
         except (json.JSONDecodeError, TypeError):
             tool_input = row["tool_input"]
-        return {"type": "tool_use", "id": row["tool_use_id"], "name": row["tool_name"], "input": tool_input}
+        return {
+            "type": "tool_use",
+            "id": row["tool_use_id"],
+            "name": row["tool_name"],
+            "input": tool_input,
+        }
     # Fallback for any other block type (e.g. tool_result), row["text"] holds
     # the JSON-serialised block from reader.py's fallback path.
     if row["text"] is not None:
@@ -105,13 +110,15 @@ def _reconstruct_conversation(last_request_rows: pd.DataFrame) -> list[dict]:
     output blocks are the final assistant turn.
     """
     messages = []
-    input_rows = last_request_rows[last_request_rows["direction"] == "input"].sort_values(
-        ["msg_idx", "block_idx"]
-    )
+    input_rows = last_request_rows[
+        last_request_rows["direction"] == "input"
+    ].sort_values(["msg_idx", "block_idx"])
     for _, block_rows in input_rows.groupby("msg_idx", sort=True):
         messages.append(_blocks_to_message(block_rows))
 
-    output_rows = last_request_rows[last_request_rows["direction"] == "output"].sort_values("block_idx")
+    output_rows = last_request_rows[
+        last_request_rows["direction"] == "output"
+    ].sort_values("block_idx")
     if not output_rows.empty:
         messages.append(_blocks_to_message(output_rows))
 
@@ -135,7 +142,9 @@ def build_sessions(df: pd.DataFrame) -> tuple[list[dict], int]:
         ``session_id`` that could not be grouped.
     """
     raw_input_df = df[df["direction"] == "input"]
-    n_requests_skipped = raw_input_df.loc[raw_input_df["session_id"] == "", "request_id"].nunique()
+    n_requests_skipped = raw_input_df.loc[
+        raw_input_df["session_id"] == "", "request_id"
+    ].nunique()
 
     # Keep the raw (non-deduped) data: last_request_per_session needs each
     # request's own full resent history intact. deduplicate_messages would
@@ -155,7 +164,9 @@ def build_sessions(df: pd.DataFrame) -> tuple[list[dict], int]:
         start_time=("start_time", "min"),
         end_time=("end_time", "max"),
     )
-    models = per_request.groupby("session_id")["model"].apply(lambda s: sorted(set(s.dropna())))
+    models = per_request.groupby("session_id")["model"].apply(
+        lambda s: sorted(set(s.dropna()))
+    )
 
     last_df = last_request_per_session(df)
 
@@ -170,8 +181,12 @@ def build_sessions(df: pd.DataFrame) -> tuple[list[dict], int]:
                 "user_api_key_alias": row["user_api_key_alias"],
                 "models": models.loc[session_id],
                 "n_requests": int(row["n_requests"]),
-                "total_spend": float(row["total_spend"]) if pd.notna(row["total_spend"]) else None,
-                "total_tokens": int(row["total_tokens"]) if pd.notna(row["total_tokens"]) else None,
+                "total_spend": float(row["total_spend"])
+                if pd.notna(row["total_spend"])
+                else None,
+                "total_tokens": int(row["total_tokens"])
+                if pd.notna(row["total_tokens"])
+                else None,
                 "start_time": row["start_time"],
                 "end_time": row["end_time"],
                 "messages": _reconstruct_conversation(group),
@@ -183,14 +198,20 @@ def build_sessions(df: pd.DataFrame) -> tuple[list[dict], int]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "input",
         type=Path,
         help="Raw data: a .jsonl file, a directory of litellm_spend_logs_*.jsonl files, or a .zip of them",
     )
     parser.add_argument(
-        "-o", "--output", type=Path, default=Path("sessions.jsonl"), help="Output JSONL path (default: sessions.jsonl)"
+        "-o",
+        "--output",
+        type=Path,
+        default=Path("sessions.jsonl"),
+        help="Output JSONL path (default: sessions.jsonl)",
     )
     args = parser.parse_args()
 
@@ -199,7 +220,11 @@ def main() -> None:
         raise SystemExit(f"No .jsonl files found at {args.input}")
 
     df = _load_all(paths)
-    n_requests = df.loc[df["direction"] == "input", "request_id"].nunique() if not df.empty else 0
+    n_requests = (
+        df.loc[df["direction"] == "input", "request_id"].nunique()
+        if not df.empty
+        else 0
+    )
 
     sessions, n_skipped = build_sessions(df)
 
